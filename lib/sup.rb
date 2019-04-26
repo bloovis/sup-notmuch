@@ -75,7 +75,7 @@ module Redwood
   module_function :reporting_thread, :record_exception, :exceptions
 
   def managers
-    %w(HookManager ContactManager LabelManager AccountManager
+    %w(HookManager SentManager ContactManager LabelManager AccountManager
     DraftManager UpdateManager PollManager CryptoManager UndoManager
     SearchManager LayoutManager).map { |x| Redwood.const_get x.to_sym }
   end
@@ -90,6 +90,7 @@ module Redwood
     @log_io = File.open(Redwood::LOG_FN, 'a')
     Redwood::Logger.add_sink @log_io
     Redwood::HookManager.init Redwood::HOOK_DIR
+    Redwood::SentManager.init $config[:sent_source] || 'sup://sent'
     Redwood::ContactManager.init Redwood::CONTACT_FN
     Redwood::LabelManager.init Redwood::LABEL_FN
     Redwood::AccountManager.init $config[:accounts]
@@ -201,6 +202,7 @@ require "sup/modes/inbox_mode"
 require "sup/modes/buffer_list_mode"
 require "sup/modes/file_browser_mode"
 require "sup/modes/completion_mode"
+require "sup/sent"
 require "sup/search"
 require "sup/modes/search_list_mode"
 

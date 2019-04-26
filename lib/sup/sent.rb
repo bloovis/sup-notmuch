@@ -3,58 +3,56 @@ module Redwood
 class SentManager
   include Redwood::Singleton
 
-  attr_reader :source, :source_uri
-
   def initialize source_uri
-    @source = nil
-    @source_uri = source_uri
-  end
-
-  def source_id; @source.id; end
-
-  def source= s
-    # raise FatalSourceError.new("Configured sent_source [#{s.uri}] can't store mail.  Correct your configuration.") unless s.respond_to? :store_message
-    # @source_uri = s.uri
-    # @source = s
-  end
-
-  def default_source
-    # TODO notmuch
-    # @source = SentLoader.new
-    # @source_uri = @source.uri
-    # @source
+    if source_uri =~ /^maildir:(\/\/)?(.*)/
+      @dir = $2
+      unless File.directory?(@dir)
+        raise ArgumentError, "No such directory #{@dir}"
+      end
+    else
+      raise ArgumentError, "#{source_uri} not a maildir URI; check :sent_source in ~/.sup/config.yaml"
+    end
+    @hostname = Socket.gethostname
   end
 
   def write_sent_message date, from_email, &block
-    # ::Thread.new do
-    #   debug "store the sent message (locking sent source..)"
-    #   @source.synchronize do
-    #     @source.store_message date, from_email, &block
-    #   end
-    #   # TODO notmuch
-    #   # PollManager.poll_from @source
-    # end
+    stored = false
+    ::Thread.new do
+      debug "store the sent message"
+      new_fn = new_maildir_basefn + ':2,S'
+      Dir.chdir(@dir) do |d|
+	tmp_path = File.join(@dir, 'tmp', new_fn)
+	new_path = File.join(@dir, 'new', new_fn)
+	begin
+	  sleep 2 if File.stat(tmp_path)
+
+	  File.stat(tmp_path)
+	rescue Errno::ENOENT #this is what we want.
+	  begin
+	    File.open(tmp_path, 'wb') do |f|
+	      yield f #provide a writable interface for the caller
+	      f.fsync
+	    end
+
+	    File.safe_link tmp_path, new_path
+	    stored = true
+	  ensure
+	    File.unlink tmp_path if File.exist? tmp_path
+	  end
+	end #rescue Errno...
+      end #Dir.chdir
+      PollManager.poll
+    end #Thread.new
+    stored
   end
-end
 
-# class SentLoader < MBox
-#   yaml_properties
-# 
-#   def initialize
-#     @filename = Redwood::SENT_FN
-#     File.open(@filename, "w") { } unless File.exist? @filename
-#     super "mbox://" + @filename, true, $config[:archive_sent]
-#   end
-# 
-#   def file_path; @filename end
-# 
-#   def to_s; 'sup://sent'; end
-#   def uri; 'sup://sent' end
-# 
-#   def id; 9998; end
-#   def labels; [:inbox, :sent]; end
-#   def default_labels; []; end
-#   def read?; true; end
-# end
+private
 
-end
+  def new_maildir_basefn
+    Kernel::srand()
+    "#{Time.now.to_i.to_s}.#{$$}#{Kernel.rand(1000000)}.#{@hostname}"
+  end
+
+end # class
+
+end # module
