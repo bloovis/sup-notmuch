@@ -41,6 +41,7 @@ class SentManager
 	  end
 	end #rescue Errno...
       end #Dir.chdir
+      Notmuch.poll
       PollManager.poll
     end #Thread.new
     stored
