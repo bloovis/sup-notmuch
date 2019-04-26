@@ -12,9 +12,9 @@ end
 require 'sup/config'
 $config = Redwood::load_config Redwood::CONFIG_FN
 
-require 'trollop'
+require 'optimist'
 
-$opts = Trollop::options do
+$opts = Optimist::options do
   banner <<EOS
 Sup is a curses-based email client.
 
@@ -32,7 +32,7 @@ EOS
   opt :subject, "When composing, use this subject", :type => String, :short => "j"
 end
 
-Trollop::die :subject, "requires --compose" if $opts[:subject] && !$opts[:compose]
+Optimist::die :subject, "requires --compose" if $opts[:subject] && !$opts[:compose]
 
 # secret config option: no_threads
 $opts[:no_threads] = $config[:no_threads] if $config.key?(:no_threads)
