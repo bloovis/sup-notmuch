@@ -2,6 +2,7 @@ require 'set'
 require 'fileutils'
 require 'monitor'
 require 'chronic'
+require 'json'
 
 require "sup/util/query"
 require "sup/hook"
