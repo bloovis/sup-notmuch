@@ -5,6 +5,11 @@ module Redwood
 class PollManager
   include Redwood::Singleton
 
+  HookManager.register "before-poll", <<EOS
+Executes immediately before a poll for new messages commences.
+No variables.
+EOS
+
   def initialize
     @delay = $config[:poll_interval] || 300
     @mutex = Mutex.new
@@ -41,9 +46,15 @@ class PollManager
   end
 
   def poll_notmuch
+    if HookManager.enabled? "before-poll"
+      HookManager.run("before-poll")
+    else
+      BufferManager.flash "Polling for new messages..."
+    end
     nowmod = Notmuch.lastmod
     return 0 if nowmod == @notmuch_lastmod
     thread_ids = Notmuch.search("lastmod:#{@notmuch_lastmod}..#{nowmod}", limit: 9999)
+    @notmuch_lastmod = nowmod
     UpdateManager.relay self, :thread_ids_updated, thread_ids
     thread_ids.size.tap {|n| BufferManager.flash "#{n.pluralize 'thread'} updated"}
   end
