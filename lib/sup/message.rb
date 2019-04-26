@@ -80,7 +80,7 @@ class Message
     @id = mjson['id']
     @labels |= Set.new((mjson['tags'] || []).map(&:to_sym))
     @subj = mjson['headers']['Subject']
-    @filename = mjson['filename']
+    @filename = mjson['filename'][0]
     @date_relative = mjson['date_relative']
     @from = Person.from_address(mjson['headers']['From'])
     @to = Person.from_address_list(mjson['headers']['To'])
@@ -295,15 +295,25 @@ EOS
   end
 
   def raw_header
-    location.raw_header
+    ret = ""
+    File.open(@filename) do |f|
+      until f.eof? || (l = f.gets) =~ /^$/
+        ret += l
+      end
+    end
+    ret
   end
 
   def raw_message
-    location.raw_message
+    File.open(@filename) { |f| f.read }
   end
 
   def each_raw_message_line &b
-    location.each_raw_message_line &b
+    File.open(@filename) do |f|
+      until f.eof?
+        yield f.gets
+      end
+    end
   end
 
   def sync_back
