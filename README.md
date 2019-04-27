@@ -6,7 +6,13 @@ Sup is a console-based email client for people with a lot of email.
 
 ## [notmuch](https://notmuchmail.org/) integration
 
-The `notmuch` branch is a WORKING-IN-PROGRESS to replace Sup's index backend with notmuch. It will reduce some features of Sup but would allow multiple Sup instances - Sup will be a "frontend" of notmuch.
+This repository is a fork of [Jun Wu's Sup](https://github.com/quark-zju/sup) which was
+in turn a fork of the [original Sup](https://github.com/sup-heliotrope/sup).  Jun Wu
+replaced Xapian indexing with notmuch indexing. I am continuing that work, fixing bugs
+and crashes, some of which may be due to changes in notmuch since 2017.  I'm also
+reverting some of Jun Wu's changes, to restore some features that he deleted.
+
+The `notmuch` branch is a WORK-IN-PROGRESS to replace Sup's index backend with notmuch. It will reduce some features of Sup but would allow multiple Sup instances - Sup will be a "frontend" of notmuch.
 
 Check the `forked` branch, or commit `35cf5cd61e` if you want to use Sup without notmuch.
 
