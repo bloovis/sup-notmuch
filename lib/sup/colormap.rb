@@ -179,7 +179,7 @@ class Colormap
       @next_id = (@next_id + 1) % Ncurses::MAX_PAIRS
       @next_id += 1 if @next_id == 0 # 0 is always white on black
       id = @next_id
-      debug "colormap: for color #{sym}, using id #{id} -> #{fg}, #{bg}"
+      # debug "colormap: for color #{sym}, using id #{id} -> #{fg}, #{bg}"
       Ncurses.init_pair id, fg, bg or raise ArgumentError,
         "couldn't initialize curses color pair #{fg}, #{bg} (key #{id})"
 
