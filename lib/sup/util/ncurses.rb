@@ -66,7 +66,7 @@ module Ncurses
         generate(code, status).tap do |c|
           if code == Ncurses::KEY_MOUSE
             mev = Ncurses::MEVENT.new
-            (win || Ncurses).getmouse(mev)
+            Ncurses.getmouse(mev)
             c.instance_eval { @mouseevent = mev }
           end
         end
