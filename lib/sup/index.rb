@@ -102,8 +102,9 @@ EOS
     key = "#{email_addresses}"
     if (@@contact_cache[key] || []).size < limit
       query = email_addresses.map{|e| "from:#{e} or to:#{e}"}.join(' ')
-      # note: --output=recipients seems to be slow
-      @@contact_cache[key] = address('--output=sender', '--output=recipients', query, limit: limit)
+      # note: --output=recipients is very slow, so don't do it
+      #@@contact_cache[key] = address('--output=sender', '--output=recipients', query, limit: limit)
+      @@contact_cache[key] = address('--output=sender', query, limit: limit)
     end
     @@contact_cache[key][0, limit]
   end
@@ -118,7 +119,7 @@ EOS
     end.gsub(/\B-tag:\w+/) do |t|
       "(not #{t[1..-1]})"
     end
-    query << ([*opts[:label]].map {|l| " tag:#{l}"}.join(''))
+    query << ([opts[:label]] + (opts[:labels] || [])).compact.map {|l| " tag:#{l}"}.join('')
     %w[spam deleted killed].each do |tag|
        loadtag = opts["load_#{tag}".to_sym] || (opts["skip_#{tag}".to_sym] == false)
        query << " (not tag:#{tag})" if !loadtag && !query.include?("tag:#{tag}")
@@ -259,6 +260,7 @@ EOS
     cmd = "notmuch #{Shellwords.join(args)}"
     cmd << " #{Shellwords.escape(optstr)}" unless optstr.empty?
     cmd << " | #{filter}" if filter
+    # system("echo '#{cmd}' >>/tmp/junk")
     if @@logger and cmd != 'notmuch count'
       @@logger.info(cmd)
     end
