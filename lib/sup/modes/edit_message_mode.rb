@@ -121,7 +121,10 @@ EOS
     end
     hostname = Socket.gethostname if hostname.nil? or hostname.empty?
 
-    message_id = (@m && @m.id) || "#{Time.now.to_i}-sup-#{rand 10000}@#{hostname}"
+    # This screws up the ID of a reply message, because it makes the reply
+    # have the same ID as the message being replied to.  Not sure why it's here.
+    #message_id = (@m && @m.id) || "#{Time.now.to_i}-sup-#{rand 10000}@#{hostname}"
+    message_id = "#{Time.now.to_i}-sup-#{rand 10000}@#{hostname}"
     @message_id = "<#{message_id}>"
     @edited = false
     @sig_edited = false
