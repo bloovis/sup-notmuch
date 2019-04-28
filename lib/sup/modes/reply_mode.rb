@@ -223,7 +223,8 @@ protected
   def send_message
     return unless super # super returns true if the mail has been sent
     @m.add_label :replied
-    Index.save_message @m
+    @m.sync_back_labels
+    #Index.save_message @m
   end
 end
 
