@@ -90,7 +90,7 @@ module Redwood
     @log_io = File.open(Redwood::LOG_FN, 'a')
     Redwood::Logger.add_sink @log_io
     Redwood::HookManager.init Redwood::HOOK_DIR
-    Redwood::SentManager.init $config[:sent_source] || 'sup://sent'
+    Redwood::SentManager.init $config[:sent_folder] || 'sent'
     Redwood::ContactManager.init Redwood::CONTACT_FN
     Redwood::LabelManager.init Redwood::LABEL_FN
     Redwood::AccountManager.init $config[:accounts]
