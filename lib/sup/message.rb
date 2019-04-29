@@ -248,6 +248,7 @@ class Message
         ## bloat the index.
         ## actually, it's also the differentiation between to/cc/bcc,
         ## so i will keep this.
+        #system("echo load_from_source! '#{@filename}' >>/tmp/junk")
         rmsg = File.open(@filename, 'rb') {|f| RMail::Parser.read f}
         parse_header rmsg.header
         message_to_chunks rmsg
@@ -294,8 +295,16 @@ class Message
 EOS
   end
 
+  def check_filename
+    unless File.exists?(@filename)
+      @filename = Notmuch.filenames_from_message_id(@id)[0]
+    end
+  end
+
   def raw_header
+    check_filename
     ret = ""
+    #system("echo raw_header '#{@filename}' >>/tmp/junk")
     File.open(@filename) do |f|
       until f.eof? || (l = f.gets) =~ /^$/
         ret += l
@@ -305,10 +314,13 @@ EOS
   end
 
   def raw_message
+    check_filename
+    #system("echo raw_message '#{@filename}' >>/tmp/junk")
     File.open(@filename) { |f| f.read }
   end
 
   def each_raw_message_line &b
+    #system("echo each_raw_message_line '#{@filename}' >>/tmp/junk")
     File.open(@filename) do |f|
       until f.eof?
         yield f.gets
