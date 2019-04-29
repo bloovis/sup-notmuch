@@ -260,13 +260,13 @@ EOS
     cmd = "notmuch #{Shellwords.join(args)}"
     cmd << " #{Shellwords.escape(optstr)}" unless optstr.empty?
     cmd << " | #{filter}" if filter
-    #system("echo '#{cmd}' >>/tmp/junk")
+    # system("echo '#{cmd}' >>/tmp/junk")
     if @@logger and cmd != 'notmuch count'
       @@logger.info(cmd)
     end
     stdout_str, stderr_str, status = Open3.capture3(cmd, stdin_data: input)
     if (check_status && !status.success?) || (check_stderr && !stderr_str.empty?)
-      raise "Failed to execute #{cmd}: exitcode=#{status.exitstatus}, stderr=#{stderr_str}"
+      raise ParseError, "Failed to execute #{cmd}: exitcode=#{status.exitstatus}, stderr=#{stderr_str}"
     end
     stdout_str
   end

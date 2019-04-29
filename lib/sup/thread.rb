@@ -344,7 +344,12 @@ class ThreadSet
 
   def load_n_threads num, *query
     return if num <= @offset
-    new_thread_ids = Notmuch.search(*query, offset: @offset, limit: num - @offset)
+    begin
+      new_thread_ids = Notmuch.search(*query, offset: @offset, limit: num - @offset)
+    rescue Notmuch::ParseError => e
+      BufferManager.flash "Problem: #{e.message}!"
+      return
+    end
     load_thread_ids new_thread_ids, ignore_existing: true
     @offset = num
   end
