@@ -40,8 +40,30 @@ EOS
     run('new', '--quiet')
   end
 
-  def insert(data)
-    run('insert', '--create-folder', input: data)
+  # Run "notmuch insert" to store a message in the specified
+  # folder (which can be nil).  Supply a block that takes
+  # an IO object; the block should write the message contents
+  # to the IO.  Return true if successful, or false otherwise.
+
+  def insert(folder)	# supply a block that takes an IO
+    cmd = "notmuch insert "
+    if folder
+      cmd << "--create-folder --folder=#{folder}"
+    end
+    pipe = IO.popen(cmd, "w:UTF-8")
+    if pipe
+      yield pipe
+      pipe.close
+      stored = true
+      Notmuch.poll
+      PollManager.poll
+      return true
+    else
+      debug "Unable to pipe to #{cmd}"
+      return false
+    end
+    # Code used to look like this:
+    #   run('insert', '--create-folder', input: data)
   end
 
   def count(*query)

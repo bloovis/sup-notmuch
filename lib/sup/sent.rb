@@ -11,20 +11,7 @@ class SentManager
     stored = false
     ::Thread.new do
       debug "store the sent message"
-      cmd = "notmuch insert "
-      if @folder
-	cmd << "--create-folder --folder=#{@folder}"
-      end
-      pipe = IO.popen(cmd, "w:UTF-8")
-      if pipe
-	yield pipe
-	pipe.close
-	stored = true
-        Notmuch.poll
-        PollManager.poll
-      else
-	debug "Unable to pipe to #{cmd}"
-      end
+      stored = Notmuch.insert(@folder, &block)
     end #Thread.new
     stored
   end
