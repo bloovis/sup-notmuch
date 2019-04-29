@@ -260,7 +260,7 @@ EOS
     cmd = "notmuch #{Shellwords.join(args)}"
     cmd << " #{Shellwords.escape(optstr)}" unless optstr.empty?
     cmd << " | #{filter}" if filter
-    # system("echo '#{cmd}' >>/tmp/junk")
+    #system("echo '#{cmd}' >>/tmp/junk")
     if @@logger and cmd != 'notmuch count'
       @@logger.info(cmd)
     end
