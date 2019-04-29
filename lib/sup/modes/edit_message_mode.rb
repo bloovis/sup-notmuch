@@ -216,7 +216,9 @@ EOS
   def edit_subject; edit_field "Subject" end
 
   def save_message_to_file
-    # dump message to a file so it could be edited later
+    # dump message to a file so it could be edited later.
+    # FIXME: should save message with notmuch insert, don't
+    # check if already exists.
     raise 'cannot save message to another file while editing' if @editing
     sig = sig_lines.join("\n")
     path = File.join(DRAFT_DIR, "#{@message_id}.eml")
