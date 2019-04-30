@@ -216,29 +216,21 @@ EOS
   def edit_subject; edit_field "Subject" end
 
   def save_message_to_file
-    # dump message to a file so it could be edited later.
-    # FIXME: should save message with notmuch insert, don't
-    # check if already exists.
     raise 'cannot save message to another file while editing' if @editing
     sig = sig_lines.join("\n")
-    path = File.join(DRAFT_DIR, "#{@message_id}.eml")
-    if File.exists?(path)
-      @file = File.open(path, 'r')
-    else
-      @file = File.open(path, 'w')
-      @file.puts format_headers(@header - NON_EDITABLE_HEADERS).first
-      @file.puts
+    @file = Tempfile.new ["sup.#{self.class.name.gsub(/.*::/, '').camel_to_hyphy}", ".eml"]
+    @file.puts format_headers(@header - NON_EDITABLE_HEADERS).first
+    @file.puts
 
-      begin
-        text = @body.join("\n")
-      rescue Encoding::CompatibilityError
-        text = @body.map { |x| x.fix_encoding! }.join("\n")
-        debug "encoding problem while writing message, trying to rescue, but expect errors: #{text}"
-      end
-
-      @file.puts text
-      @file.puts sig if ($config[:edit_signature] and !@sig_edited)
+    begin
+      text = @body.join("\n")
+    rescue Encoding::CompatibilityError
+      text = @body.map { |x| x.fix_encoding! }.join("\n")
+      debug "encoding problem while writing message, trying to rescue, but expect errors: #{text}"
     end
+
+    @file.puts text
+    @file.puts sig if ($config[:edit_signature] and !@sig_edited)
     @file.close
   end
 

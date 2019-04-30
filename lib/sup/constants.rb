@@ -5,8 +5,6 @@ module ::Redwood
   SOURCE_FN  = File.join(BASE_DIR, "sources.yaml")
   LABEL_FN   = File.join(BASE_DIR, "labels.txt")
   CONTACT_FN = File.join(BASE_DIR, "contacts.txt")
-  DRAFT_DIR  = File.join(BASE_DIR, "drafts")
-  SENT_FN    = File.join(BASE_DIR, "sent.mbox")
   LOCK_FN    = File.join(BASE_DIR, "lock")
   SUICIDE_FN = File.join(BASE_DIR, "please-kill-yourself")
   HOOK_DIR   = File.join(BASE_DIR, "hooks")
