@@ -85,7 +85,7 @@ EOS
 
   def show(*query, body: false)
     # query: usually just a thread id
-    JSON.parse(run('show', '--format=json', "--body=#{body}", *query))
+    JSON.parse(run('show', '--format=json', "--body=#{body}", *query), max_nesting: false)
   end
 
   def tag(*query)
@@ -135,10 +135,7 @@ EOS
   def convert_query(opts={})
     return opts if opts.is_a?(String)
     return '' if opts.empty?
-    query = (opts[:text] || '').gsub(/\blabel:/, 'tag:').gsub(/\b(from|to):me\b/) do |m|
-      conditions = AccountManager.user_emails.map { |e| "#{m[/^.*:/]}#{e}" }
-      "(#{conditions.join(' or ')})"
-    end.gsub(/\B-tag:\w+/) do |t|
+    query = (opts[:translated] || '').gsub(/\blabel:/, 'tag:').gsub(/\B-tag:\w+/) do |t|
       "(not #{t[1..-1]})"
     end
     query << ([opts[:label]] + (opts[:labels] || [])).compact.map {|l| " tag:#{l}"}.join('')
@@ -166,15 +163,20 @@ EOS
     rescue SearchManager::ExpansionError => e
       raise ParseError, e.message
     end
+    #system("echo 'subs before: #{subs}' >>/tmp/sup.log")
     subs = subs.gsub(/\b(to|from):(\S+)\b/) do
       field, value = $1, $2
-      email_field, name_field = %w(email name).map { |x| "#{field}_#{x}" }
-      if(p = ContactManager.contact_for(value))
-        "#{email_field}:#{p.email}"
+      p = ContactManager.contact_for(value)
+      #system("echo 'parse_query: contact_for(#{value}) = #{p}' >>/tmp/sup.log")
+      #if p
+	#system("echo '#{field}:#{p.email}' >>/tmp/sup.log")
+      #end
+      if p
+        "#{field}:#{p.email}"
       elsif value == "me"
-        '(' + AccountManager.user_emails.map { |e| "#{email_field}:#{e}" }.join(' OR ') + ')'
+        '(' + AccountManager.user_emails.map { |e| "#{field}:#{e}" }.join(' OR ') + ')'
       else
-        "(#{email_field}:#{value} OR #{name_field}:#{value})"
+        "#{field}:#{value}"
       end
     end
 
@@ -265,7 +267,10 @@ EOS
     end
 
     debug "translated query: #{subs.inspect}"
+    #system("echo 'query text: #{s}' >>/tmp/sup.log")
+    #system("echo 'translated query: #{subs}' >>/tmp/sup.log")
     query[:text] = s
+    query[:translated] = subs
     query
   end
   private
