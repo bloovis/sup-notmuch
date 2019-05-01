@@ -93,7 +93,8 @@ protected
     return unless super # super returns true if the mail has been sent
     if @m
       @m.add_label :forwarded
-      Index.save_message @m
+      @m.sync_back_labels
+      #Index.save_message @m
     end
   end
 end
