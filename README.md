@@ -16,7 +16,7 @@ I have added two new configuration options (found in `~/.sup/config.yaml`):
   If not specified, the default is `draft`.
 
 All of my changes are on the `notmuch` branch of this repository.  I
-have tested is on Linux Mint 19 (based on Ubuntu 18.04), which uses
+have tested it on Linux Mint 19 (based on Ubuntu 18.04), which uses
 ruby version 2.5.1p57, and notmuch version 0.26.
 
 To run it, use this command in the repository's top-level directory:
@@ -112,6 +112,18 @@ this was accomplished with the `tags=new;` line in `$HOME/.notmuch-config`.
 Notmuch runs this script after it has scanned the maildir for new messages.
 
 ### sup setup
+
+To tell sup to fetch mail before polling for new mail, create the
+file `$HOME/.sup/hooks/before-poll.rb` that looks like this:
+
+  if (@last_fetchmail_time || Time.at(0)) < Time.now - 15
+    say "Fetching mail..."
+    system "notmuch new &>>/tmp/notmuch-new.log"
+  end
+  @last_fetchmail_time = Time.now
+
+This will prevent fetching of mail more frequently than every 15 seconds.  It also
+saves a log of the "notmuch new" invocations for debugging purposes.
 
 To allow sup to display HTML-encoded emails, create the file `$HOME/.sup/hooks/mime-decode.rb`
 that looks like this:
