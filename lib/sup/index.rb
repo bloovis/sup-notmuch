@@ -227,8 +227,8 @@ EOS
         debug "filename: translated #{field}:#{name} to attachment:\"#{name.downcase}\""
         "attachment:\"#{name.downcase}\""
       when "filetype"
-        debug "filetype: translated #{field}:#{name} to attachment_extension:#{name.downcase}"
-        "attachment_extension:#{name.downcase}"	# FIXME - notmuch doesn't support this query
+        debug "filetype: translated #{field}:#{name} to mimetype:#{name.downcase}"
+        "mimetype:#{name.downcase}"
       end
     end
 
