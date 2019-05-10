@@ -1,7 +1,6 @@
 require 'set'
 require 'fileutils'
 require 'monitor'
-require 'chronic'
 require 'json'
 
 require "sup/util/query"
@@ -229,7 +228,7 @@ EOS
         "attachment:\"#{name.downcase}\""
       when "filetype"
         debug "filetype: translated #{field}:#{name} to attachment_extension:#{name.downcase}"
-        "attachment_extension:#{name.downcase}"
+        "attachment_extension:#{name.downcase}"	# FIXME - notmuch doesn't support this query
       end
     end
 
@@ -237,21 +236,14 @@ EOS
     firstdate = 0
     subs = subs.gsub(/\b(before|on|in|during|after):(\((.+?)\)\B|(\S+)\b)/) do
       field, datestr = $1, ($3 || $4)
-      realdate = Chronic.parse datestr, :guess => false, :context => :past
-      if realdate
-        case field
-        when "after"
-          debug "chronic: translated #{field}:#{datestr} to #{realdate.end}"
-          "date:#{realdate.end.to_i}..#{lastdate}"
-        when "before"
-          debug "chronic: translated #{field}:#{datestr} to #{realdate.begin}"
-          "date:#{firstdate}..#{realdate.end.to_i}"
-        else
-          debug "chronic: translated #{field}:#{datestr} to #{realdate}"
-          "date:#{realdate.begin.to_i}..#{realdate.end.to_i}"
-        end
+      datestr.gsub!(/ /,'_')       # translate spaces to underscores
+      case field
+      when "after"
+	"date:#{datestr}.."
+      when "before"
+	"date:..#{datestr}"
       else
-        raise ParseError, "can't understand date #{datestr.inspect}"
+	"date:#{datestr}..!"
       end
     end
 
@@ -267,8 +259,8 @@ EOS
     end
 
     debug "translated query: #{subs.inspect}"
-    #system("echo 'query text: #{s}' >>/tmp/sup.log")
-    #system("echo 'translated query: #{subs}' >>/tmp/sup.log")
+    system("echo 'query[:text] = #{s}' >>/tmp/sup.log")
+    system("echo 'query[:translated] = #{subs}' >>/tmp/sup.log")
     query[:text] = s
     query[:translated] = subs
     query
