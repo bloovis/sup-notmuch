@@ -390,9 +390,9 @@ protected
     success = BufferManager.shell_out command, is_gui
     @editing = false
 
-    @edited = File.exists?(filepath) && File.mtime(filepath) > mtime && success
-
-    if not @edited
+    if File.exists?(filepath) && File.mtime(filepath) > mtime && success
+      @edited = true
+    else
       BufferManager.completely_redraw_screen
       return @edited
     end
