@@ -259,8 +259,8 @@ EOS
     end
 
     debug "translated query: #{subs.inspect}"
-    system("echo 'query[:text] = #{s}' >>/tmp/sup.log")
-    system("echo 'query[:translated] = #{subs}' >>/tmp/sup.log")
+    #system("echo 'query[:text] = #{s}' >>/tmp/sup.log")
+    #system("echo 'query[:translated] = #{subs}' >>/tmp/sup.log")
     query[:text] = s
     query[:translated] = subs
     query
@@ -279,7 +279,7 @@ EOS
     cmd = "notmuch #{Shellwords.join(args)}"
     cmd << " #{Shellwords.escape(optstr)}" unless optstr.empty?
     cmd << " | #{filter}" if filter
-    system("echo '#{cmd}' >>/tmp/sup.log")
+    #system("echo '#{cmd}' >>/tmp/sup.log")
     if @@logger and cmd != 'notmuch count'
       @@logger.info(cmd)
     end

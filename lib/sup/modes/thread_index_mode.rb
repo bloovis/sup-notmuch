@@ -575,6 +575,7 @@ EOS
 
     keepl, modifyl = thread.labels.partition { |t| speciall.member? t }
 
+    #system("echo 'edit_labels: hidden labels = #{@hidden_labels}' >>/tmp/sup.log")
     user_labels = BufferManager.ask_for_labels :label, "Labels for thread: ", modifyl.sort_by {|x| x.to_s}, @hidden_labels
     return unless user_labels
 
