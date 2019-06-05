@@ -80,11 +80,10 @@ class TextField
     # draw question
     @w.attrset Colormap.color_for(:text_color)
     @w.mvaddstr 0, 0, @question
-    @w.refresh
 
     # move cursor
     @form.form_driver Ncurses::Form::REQ_END_LINE
-    @form.form_driver Ncurses::Form::REQ_NEXT_CHAR if @value && @value =~ / $/ # fucking RETARDED
+    @w.refresh
   end
 
   def deactivate
