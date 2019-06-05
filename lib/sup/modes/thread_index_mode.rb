@@ -720,7 +720,9 @@ EOS
       if num > 0
         BufferManager.flash "Found #{num.pluralize 'thread'}."
       else
-        BufferManager.flash "No matches."
+        unless @load_thread_opts[:label] && @load_thread_opts[:label] == :inbox
+          BufferManager.flash "No matches."
+        end
       end
     end)})
 
