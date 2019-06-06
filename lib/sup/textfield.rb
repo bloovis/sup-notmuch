@@ -83,6 +83,10 @@ class TextField
 
     # move cursor
     @form.form_driver Ncurses::Form::REQ_END_LINE
+
+    # Work around a problem with ncurses where it won't move the cursor
+    # past a trailing blank.
+    @form.form_driver Ncurses::Form::REQ_NEXT_CHAR if @value && @value[-1] == ' '
     @w.refresh
   end
 
