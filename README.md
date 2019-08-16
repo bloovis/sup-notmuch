@@ -116,11 +116,11 @@ Notmuch runs this script after it has scanned the maildir for new messages.
 To tell sup to fetch mail before polling for new mail, create the
 file `$HOME/.sup/hooks/before-poll.rb` that looks like this:
 
-  if (@last_fetchmail_time || Time.at(0)) < Time.now - 15
-    say "Fetching mail..."
-    system "notmuch new &>>/tmp/notmuch-new.log"
-  end
-  @last_fetchmail_time = Time.now
+    if (@last_fetchmail_time || Time.at(0)) < Time.now - 15
+      say "Fetching mail..."
+      system "notmuch new &>>/tmp/notmuch-new.log"
+    end
+    @last_fetchmail_time = Time.now
 
 This will prevent fetching of mail more frequently than every 15 seconds.  It also
 saves a log of the "notmuch new" invocations for debugging purposes.
