@@ -42,7 +42,10 @@ class ScrollMode < Mode
   def rightcol; @leftcol + buffer.content_width; end
 
   def draw
+    #system("echo 'scroll_mode draw before ensure: topline = #{@topline}, botline = #{@botline}' >>/tmp/junk")
     ensure_mode_validity
+    #system("echo 'scroll_mode draw after ensure: topline = #{@topline}, botline = #{@botline}' >>/tmp/junk")
+    return if @topline < 0	# HACK!
     (@topline ... @botline).each { |ln| draw_line ln, :color => :text_color }
     ((@botline - @topline) ... buffer.content_height).each do |ln|
       if @twiddles
