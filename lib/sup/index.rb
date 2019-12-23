@@ -123,9 +123,10 @@ EOS
     key = "#{email_addresses}"
     if (@@contact_cache[key] || []).size < limit
       query = email_addresses.map{|e| "from:#{e} or to:#{e}"}.join(' ')
-      # note: --output=recipients is very slow, so don't do it
+      # note: using notmuch to get a list of contact is very slow, so don't do it.
       #@@contact_cache[key] = address('--output=sender', '--output=recipients', query, limit: limit)
-      @@contact_cache[key] = address('--output=sender', query, limit: limit)
+      #@@contact_cache[key] = address('--output=sender', query, limit: limit)
+      @@contact_cache[key] = []
     end
     @@contact_cache[key][0, limit]
   end
