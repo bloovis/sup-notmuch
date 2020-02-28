@@ -541,6 +541,10 @@ EOS
       end
     end
 
+    # Strip single quotes to allow filenames to be dragged and dropped
+    # from file browsers like Mate Caja.
+    answer.gsub!(/'/, '')
+
     if answer
       answer =
         if answer.empty?
