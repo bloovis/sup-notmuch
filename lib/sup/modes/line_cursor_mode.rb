@@ -77,11 +77,11 @@ protected
     if c != @curpos
       buffer.mark_dirty
       # try to handle curpos changes due to resize
-      jump_to_line @topline + (@curpos - c) if c < @curpos
+      #jump_to_line @topline + (@curpos - c) if c < @curpos
       # recalculate c
-      c = @curpos.clamp topline, botline - 1
-      @curpos = c
+      #c = @curpos.clamp topline, botline - 1
     end
+    @curpos = c
   end
 
   def set_cursor_pos p
