@@ -541,11 +541,11 @@ EOS
       end
     end
 
-    # Strip single quotes to allow filenames to be dragged and dropped
-    # from file browsers like Mate Caja.
-    answer.gsub!(/'/, '')
-
     if answer
+      # Strip single quotes to allow filenames to be dragged and dropped
+      # from file browsers like Mate Caja.
+      answer.gsub!(/'/, '')
+
       answer =
         if answer.empty?
           spawn_modal "file browser", FileBrowserMode.new
