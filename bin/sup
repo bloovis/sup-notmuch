@@ -377,11 +377,11 @@ unless Redwood::exceptions.empty?
 We are very sorry. It seems that an error occurred in Sup. Please
 accept our sincere apologies. Please submit the contents of
 #{BASE_DIR}/exception-log.txt and a brief report of the
-circumstances to https://github.com/sup-heliotrope/sup/issues so that
+circumstances to https://gitlab.com/bloovis/sup-notmuch/-/issues so that
 we might address this problem. Thank you!
 
 Sincerely,
-The Sup Developers
+The sup-notmuch developer (marka@pobox.com)
 ----------------------------------------------------------------
 EOS
   Redwood::exceptions.each do |e, name|
