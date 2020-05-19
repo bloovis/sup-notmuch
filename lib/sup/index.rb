@@ -119,8 +119,8 @@ EOS
   end
 
   def load_contacts(email_addresses, limit=20)
-    @@contact_cache ||= {}
     key = "#{email_addresses}"
+    @@contact_cache ||= { key => [] }
     if (@@contact_cache[key] || []).size < limit
       query = email_addresses.map{|e| "from:#{e} or to:#{e}"}.join(' ')
       # note: using notmuch to get a list of contact is very slow, so don't do it.
