@@ -39,7 +39,7 @@ class Message
   DEFAULT_SENDER = "(missing sender)"
   MAX_HEADER_VALUE_SIZE = 4096
 
-  attr_reader :id, :date, :from, :subj, :refs, :replytos, :to,
+  attr_reader :id, :date, :from, :orig_from, :subj, :refs, :replytos, :to,
               :cc, :bcc, :labels, :attachments, :list_address, :recipient_email, :replyto,
               :list_subscribe, :list_unsubscribe, :filename
 
@@ -117,6 +117,8 @@ class Message
       header["reply-to"] || header["from"] ||
       "Sup Auto-generated Fake Sender <sup@fake.sender.example.com>"
     )
+
+    @orig_from = header["x-original-from"] || "?"
 
     @date = case(date = header["date"])
     when Time
