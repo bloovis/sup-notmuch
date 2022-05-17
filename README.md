@@ -12,7 +12,7 @@ I have added two new configuration options (found in `~/.sup/config.yaml`):
 
 * `:sent_folder`: a string containing the name of the mail folder to be used to store sent emails.
   If not specified, the default is `sent`.
-* `:draft_folder`: a string containing the name of the mail folder to be used to store draft emails (i.e., composed but unsent emails)
+* `:draft_folder`: a string containing the name of the mail folder to be used to store draft emails (i.e., composed but unsent emails).
   If not specified, the default is `draft`.
 
 All of my changes are on the `notmuch` branch of this repository.  I
@@ -44,7 +44,7 @@ Sup depends on number of gems.  Here is a partial list:
 * activesupport (use version 6.0.2.2 for Mint 19 / Ubuntu 18.04)
 
 The ncursesw gem will likely cause the most trouble.  First of all, it requires
-that the following packages be installed with `apt get`:
+that the following packages be installed with `apt install`:
 
 * libncursesw5
 * libncursesw5-dev
