@@ -31,19 +31,51 @@ To clone the repository and switch to the `notmuch` branch:
     cd sup-notmuch
     git checkout notmuch
 
-Sup depends on the `rmail-sup` gem, which has not been updated for Ruby 2.5.  It will
-still work, but you will see warning messages about Fixnum cluttering up Sup's screen.
-To fix this, you will need to edit the source files for the gem, and replace instances
-of `Fixnum` with `Integer`.  You can find those instances using this:
+Sup depends on number of gems.  Here is a partial list:
 
-    cd /var/lib/gems/2.5.0/gems/rmail-sup-1.0.1		# use 'gem env' to get actual path
-    egrep -n -R --include="*.rb" Fixnum
+* optimist
+* lockfile
+* mime-types
+* unicode
+* ncursesw (see note below)
+* highline
+* locale
+* rmail (*not* rmail-sup!)
+* activesupport (use version 6.0.2.2 for Mint 19 / Ubuntu 18.04)
 
-Then change the found lines using your favorite editor.
+The ncursesw gem will likely cause the most trouble.  First of all, it requires
+that the following packages be installed with `apt get`:
+
+* libncursesw5
+* libncursesw5-dev
+
+Secondly, the ncursesw gem may not work correctly; I ran into this problem on Mint 19.3, not on Mint 19.1.
+The problem can be revealed by running the following command:
+
+    ruby -e 'require "ncursesw"'
+
+On Mint 19.3, this produced a fatal error about the symbol `set_menu_win` being undefined.
+This is a [known problem](https://github.com/sup-heliotrope/sup/issues/550).  I fixed
+this in a hacky sort of way.  First, as root, move to the source directory for
+the ncursesw gem (the exact path will likely be different on your system):
+
+    cd /var/lib/gems/2.5.0/gems/ncursesw-1.4.10
+
+Then edit the Makefile and make sure `-lmenuw` (*not* `-lmenu`) is in
+the LIBS definition, so that it looks like this:
+
+    LIBS = $(LIBRUBYARG_SHARED) -lmenuw -lformw [...]
+
+Then run make to rebuild the shared library, and copy it to the lib subdirectory:
+
+    make
+    cp *.so lib
 
 To run Sup, use this command in the repository's top-level directory:
 
     ruby -I lib bin/sup
+
+If gems are missing, sup will crash with a warning.
 
 But first you'll want to set up notmuch and Sup for receiving, sending, and indexing your mail
 
@@ -72,6 +104,9 @@ This creates a file `~/.notmuch-config`.  I edited this file as follows:
 
 * removed `deleted;spam;` from the `exclude_tags` line.  This allows sup to search
   for deleted or spam emails.
+
+* changed `synchronize_flags` to false.  This prevents notmuch from modifying email filenames,
+  which could confuse sup and cause it to crash.
 
 I left the `path` value in the `[database]` section unchanged.  I used `maildirmake`
 to create `~/mail`, and to create the `sent`, `draft`, and `inbox` subdirectories
