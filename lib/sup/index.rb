@@ -73,8 +73,18 @@ EOS
     run('address', '--format=text', *query, filter: "head -n #{limit}").lines.uniq.map {|a| Person.from_address a.chomp}
   end
 
-  def search(*query, format: 'text', exclude: true, output: 'threads', offset: nil, limit: nil)
-    # search threads, return thread ids
+  def search(*query, **kwargs)
+    if query[1]
+      kwargs = query[1]
+      query[1] = nil
+    end
+    format = kwargs[:format] || 'text'
+    exclude = kwargs[:exclude] || true
+    output = kwargs[:output] || 'threads'
+    offset = kwargs[:offset] || nil
+    limit = kwargs[:limit] || nil
+    debug "search: query #{query}, offset #{offset}, limit #{limit}"
+  # search threads, return thread ids
     flags = ["--format=#{format}", "--output=#{output}"]
     flags << "--offset=#{offset}" unless offset.nil?
     flags << "--limit=#{limit}" unless limit.nil?
@@ -260,8 +270,8 @@ EOS
     end
 
     debug "translated query: #{subs.inspect}"
-    #system("echo 'query[:text] = #{s}' >>/tmp/sup.log")
-    #system("echo 'query[:translated] = #{subs}' >>/tmp/sup.log")
+    system("echo 'query[:text] = #{s}' >>/tmp/sup.log")
+    system("echo 'query[:translated] = #{subs}' >>/tmp/sup.log")
     query[:text] = s
     query[:translated] = subs
     query
@@ -280,7 +290,7 @@ EOS
     cmd = "notmuch #{Shellwords.join(args)}"
     cmd << " #{Shellwords.escape(optstr)}" unless optstr.empty?
     cmd << " | #{filter}" if filter
-    #system("echo '#{cmd}' >>/tmp/sup.log")
+    system("echo '#{cmd}' >>/tmp/sup.log")
     if @@logger and cmd != 'notmuch count'
       @@logger.info(cmd)
     end
