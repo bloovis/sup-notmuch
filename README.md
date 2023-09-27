@@ -8,26 +8,21 @@ replaced Xapian indexing with [notmuch](https://notmuchmail.org/) indexing. I am
 and crashes, some of which may be due to changes in notmuch since 2017.  I'm also
 reverting some of Jun Wu's changes, to restore some features that he deleted.
 
-I have added two new configuration options (found in `~/.sup/config.yaml`):
-
-* `:sent_folder`: a string containing the name of the mail folder to be used to store sent emails.
-  If not specified, the default is `sent`.
-* `:draft_folder`: a string containing the name of the mail folder to be used to store draft emails (i.e., composed but unsent emails).
-  If not specified, the default is `draft`.
-
 All of my changes are on the `notmuch` branch of this repository.  I
 have tested it on Linux Mint 19 (based on Ubuntu 18.04), which uses
 ruby version 2.5.1p57, and notmuch version 0.26.
 
 ## Installation
 
-To use Sup with notmuch, you must checkout and use the `notmuch` branch
-of this repository.  I have tested this branch on Linux Mint 19 (based on Ubuntu 18.04), which uses
-ruby version 2.5.1p57, and notmuch version 0.26.
+To use sup-notmuch (Sup with notmuch support), you must checkout and use the `notmuch` branch
+of the [sup-notmuch git repository](https://www.bloovis.com/cgit/sup-notmuch/).
+
+I have tested sup-notmuch on Linux Mint 19 (based on Ubuntu 18.04),
+which uses ruby version 2.5.1p57, and notmuch version 0.26.
 
 To clone the repository and switch to the `notmuch` branch:
 
-    git clone https://gitlab.com/bloovis/sup-notmuch.git
+    git clone https://bionic.bloovis.com/cgit/sup-notmuch
     cd sup-notmuch
     git checkout notmuch
 
@@ -83,12 +78,12 @@ But first you'll want to set up notmuch and Sup for receiving, sending, and inde
 
 In this example, I use fetchmail to fetch mail from my provider, which then
 passes the mail off to notmuch for storing in a maildir.  I have set up notmuch
-hooks to run fetchmail when sup runs `notmuch new`, and to tag the incoming messages based
-on the sender.  Finally, I have set up sup to use `msmtp` to send outgoing mail.
+hooks to run fetchmail when Sup runs `notmuch new`, and to tag the incoming messages based
+on the sender.  Finally, I have set up Sup to use `msmtp` to send outgoing mail.
 
 ### notmuch initial setup
 
-By default, notmuch assumes that your primary maildir is ~/mail.  In this
+By default, notmuch assumes that your primary maildir is `~/mail`.  In this
 example, I use subdirectories ("folders") of that directory for things like the inbox,
 sent mail, and draft mail.
 
@@ -154,7 +149,7 @@ This script saves all fetchmail output in a log file for debugging purposes.  It
 an exit code of 0 in all cases.  This is necessary because fetchmail will return a non-zero exit code
 if there is no new mail to fetch, and that will cause notmuch to fail.
 
-Notmuch runs the this script before it scans the mail directory for new messages.
+Notmuch runs the `pre-new` script before it scans the mail directory for new messages.
 
 The `post-new` script looks like this:
 
@@ -174,7 +169,7 @@ The `post-new` script looks like this:
     notmuch tag +mw -- 'tag:new and from:word@m-w.com'
 
     # retag all "new" messages "inbox" and "unread"
-    notmuch tag +inbox +unread -new -- tag:new and not folder:sent'
+    notmuch tag +inbox +unread -new -- 'tag:new and not folder:sent'
 
     # retag all "new" sent messages "inbox", but not "unread"
     notmuch tag +inbox -new -- 'tag:new and folder:sent'
@@ -182,11 +177,11 @@ The `post-new` script looks like this:
 This script depends on new messages being tagged with the `new` tag.  As mentioned above,
 this was accomplished with the `tags=new;` line in `~/.notmuch-config`.
 
-Notmuch runs this script after it has scanned the maildir for new messages.
+Notmuch runs the `post-new` script after it has scanned the maildir for new messages.
 
 ### Sup setup
 
-To tell sup to fetch mail before polling for new mail, create the
+To tell Sup to fetch mail before polling for new mail, create the
 file `~/.sup/hooks/before-poll.rb` that looks like this:
 
     if (@last_fetchmail_time || Time.at(0)) < Time.now - 15
@@ -198,7 +193,7 @@ file `~/.sup/hooks/before-poll.rb` that looks like this:
 This will prevent fetching of mail more frequently than every 15 seconds.  It also
 saves a log of the "notmuch new" invocations for debugging purposes.
 
-To allow sup to display HTML-encoded emails, create the file `$HOME/.sup/hooks/mime-decode.rb`
+To allow Sup to display HTML-encoded emails, create the file `$HOME/.sup/hooks/mime-decode.rb`
 that looks like this:
 
     unless sibling_types.member? "text/plain"
