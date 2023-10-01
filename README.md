@@ -12,6 +12,12 @@ All of my changes are on the `notmuch` branch of this repository.  I
 have tested it on Linux Mint 19 (based on Ubuntu 18.04), which uses
 ruby version 2.5.1p57, and notmuch version 0.26.
 
+## Sup User's Guide
+
+I have converted the original Sup Wiki to a static HTML [Sup User's Guide](https://www.bloovis.com/supguide/).
+Much of the information there is still relevant to sup-notmuch, but you can
+ignore anything related to Xapian or installation of the old sup.
+
 ## Installation
 
 To use sup-notmuch (Sup with notmuch support), you must checkout and use the `notmuch` branch
@@ -252,9 +258,3 @@ from dash to bash.  Run this command:
     sudo dpkg-reconfigure dash
 
 When you are asked whether you want dash to be the default shell, select "No".
-
-## Sup User's Guide
-
-I have converted the original Sup Wiki to a static HTML [Sup User's Guide](https://www.bloovis.com/supguide/).
-Much of the information there is still relevant to sup-notmuch, but you can
-ignore anything related to Xapian or installation of the old sup.
