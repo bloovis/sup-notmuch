@@ -128,7 +128,7 @@ a ThinkPad X200s.)
 
 ### fetchmail setup
 
-My `~/fetchmailrc` looks something like this:
+My `~/.fetchmailrc` looks something like this:
 
     poll mail.example.com port 995 with proto POP3 user 'me@example.com' pass 'mypassword' options ssl
       mda "notmuch insert --folder=inbox"
