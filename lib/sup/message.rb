@@ -71,12 +71,14 @@ class Message
       @id = opts[:id].sub(/^</, '').sub(/>$/, '')
       load_from_notmuch! # notmuch id -> file, load from file, slow
     elsif opts[:header]
+      #system("echo Message.initialize calling parse_header >>/tmp/sup.log")
       parse_header(opts[:header])
     end
     raise 'filename is required' if @filename.nil?
   end
 
   def load_from_json! mjson
+    #system("echo load_from_json called from #{caller[0].shellescape} >>/tmp/sup.log")
     @id = mjson['id']
     @labels |= Set.new((mjson['tags'] || []).map(&:to_sym))
     @subj = mjson['headers']['Subject']
@@ -99,16 +101,19 @@ class Message
   end
 
   def parse_header encoded_header
+    #system("echo parse_header for id #{@id} called from #{caller[0].shellescape} >>/tmp/sup.log")
     header = SavingHash.new { |k| decode_header_field encoded_header[k] }
 
-    @id = ''
+    @id ||= ''
     @raw_mid = header["message-id"]
     if @raw_mid
       mid = @raw_mid =~ /<(.+?)>/ ? $1 : @raw_mid
       @id = mid
     end
-    if (not @id.include? '@') || @id.length < 6
+    #system("echo parse_header id is now #{@id} >>/tmp/sup.log")
+    if (not @id.start_with?("notmuch-")) && ((not @id.include? '@') || @id.length < 6)
       @id = "sup-faked-" + Digest::MD5.hexdigest(raw_header)
+      #system("echo parse_header creating fake id #{@id} >>/tmp/sup.log")
       #from = header["from"]
       #debug "faking non-existent message-id for message from #{from}: #{id}"
     end
@@ -177,6 +182,7 @@ class Message
     mid = @id
     if not @filename
       @filename = Notmuch.filenames_from_message_id(mid)[0]
+      #system("echo load_from_notmuch: mid #{mid}, filename #{@filename} >>/tmp/sup.log")
       load_from_source!
     end
     @labels = Set.new(Notmuch.tags_from_message_id(mid).map(&:to_sym))
@@ -233,12 +239,14 @@ class Message
   end
 
   def chunks
+    #system("echo chunks calling load_from_source >>/tmp/sup.log")
     load_from_source!
     @chunks
   end
 
   ## this is called when the message body needs to actually be loaded.
   def load_from_source!
+    #system("echo load_from_source for id #{@id} called from #{caller[0].shellescape} >>/tmp/sup.log")
     return unless @filename # should we just fail here?
     @chunks ||=
       begin
@@ -250,7 +258,7 @@ class Message
         ## bloat the index.
         ## actually, it's also the differentiation between to/cc/bcc,
         ## so i will keep this.
-        #system("echo load_from_source! '#{@filename}' >>/tmp/junk")
+        #system("echo load_from_source! '#{@filename}' >>/tmp/sup.log")
         rmsg = File.open(@filename, 'rb') {|f| RMail::Parser.read f}
         parse_header rmsg.header
         message_to_chunks rmsg
@@ -282,6 +290,7 @@ class Message
   end
 
   def reload_from_source!
+    #system("echo reload_from_source calling load_from_source >>/tmp/sup.log")
     @chunks = nil
     load_from_source!
   end
