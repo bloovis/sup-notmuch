@@ -107,6 +107,7 @@ EOS
       "#{ls.map{|l| "+#{l} "}.join} -- #{q}\n"
     end.join
     @@logger.debug("tag input: #{input}") if @@logger
+    debug "tag_batch input: #{input}"
     run('tag', '--remove-all', '--batch', input: input)
   end
 
@@ -173,14 +174,9 @@ EOS
     rescue SearchManager::ExpansionError => e
       raise ParseError, e.message
     end
-    #system("echo 'subs before: #{subs}' >>/tmp/sup.log")
     subs = subs.gsub(/\b(to|from):(\S+)\b/) do
       field, value = $1, $2
       p = ContactManager.contact_for(value)
-      #system("echo 'parse_query: contact_for(#{value}) = #{p}' >>/tmp/sup.log")
-      #if p
-	#system("echo '#{field}:#{p.email}' >>/tmp/sup.log")
-      #end
       if p
         "#{field}:#{p.email}"
       elsif value == "me"
@@ -270,8 +266,6 @@ EOS
     end
 
     debug "translated query: #{subs.inspect}"
-    system("echo 'query[:text] = #{s}' >>/tmp/sup.log")
-    system("echo 'query[:translated] = #{subs}' >>/tmp/sup.log")
     query[:text] = s
     query[:translated] = subs
     query
@@ -290,7 +284,7 @@ EOS
     cmd = "notmuch #{Shellwords.join(args)}"
     cmd << " #{Shellwords.escape(optstr)}" unless optstr.empty?
     cmd << " | #{filter}" if filter
-    system("echo '#{cmd}' >>/tmp/sup.log")
+    debug "Running #{cmd}"
     if @@logger and cmd != 'notmuch count'
       @@logger.info(cmd)
     end

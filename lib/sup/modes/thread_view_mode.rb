@@ -330,7 +330,6 @@ EOS
   def edit_labels
     old_labels = @thread.labels
     reserved_labels = old_labels.select { |l| LabelManager::RESERVED_LABELS.include? l }
-    #system("echo 'edit_labels: thread.labels = #{@thread.labels}' >>/tmp/sup.log")
     new_labels = BufferManager.ask_for_labels :label, "Labels for thread: ", @thread.labels.sort_by {|x| x.to_s}
 
     return unless new_labels
