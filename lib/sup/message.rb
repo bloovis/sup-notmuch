@@ -340,26 +340,6 @@ EOS
     dirtymessages.each(&:clear_dirty_labels)
   end
 
-  def merge_labels_from_locations merge_labels
-    ## Get all labels from all locations
-    location_labels = Set.new([])
-
-    @locations.each do |l|
-      if l.valid?
-        location_labels = location_labels.union(l.labels?)
-      end
-    end
-
-    ## Add to the message labels the intersection between all location
-    ## labels and those we want to merge
-    location_labels = location_labels.intersection(merge_labels.to_set)
-
-    if not location_labels.empty?
-      @labels = @labels.union(location_labels)
-      @dirty_labels = true
-    end
-  end
-
   def quotable_body_lines
     chunks.find_all { |c| c.quotable? }.map { |c| c.lines }.flatten
   end
