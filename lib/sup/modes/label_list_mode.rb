@@ -81,7 +81,7 @@ protected
     counted = labels.map do |label|
       string = LabelManager.string_for label
       total = Notmuch.count("tag:#{label}")
-      unread = (label == :unread)? total : Notmuch.count("tag:#{label}", 'tag:unread')
+      unread = (label == :unread)? total : Notmuch.count("tag:#{label} and tag:unread")
       [label, string, total, unread]
     end
 
