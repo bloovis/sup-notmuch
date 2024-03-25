@@ -9,8 +9,15 @@ and crashes, some of which may be due to changes in notmuch since 2017.  I'm als
 reverting some of Jun Wu's changes, to restore some features that he deleted.
 
 All of my changes are on the `notmuch` branch of this repository.  I
-have tested it on Linux Mint 19 (based on Ubuntu 18.04), which uses
+have tested it in the following environments:
+
+* Linux Mint 19 (based on Ubuntu 18.04), with
 ruby version 2.5.1p57, and notmuch version 0.26.
+
+* Linux Mint 21 and Ubuntu 22.04, with ruby version 3.0.2p107 and notmuch version 0.35.
+
+I have ported Sup-notmuch to Crystal, and am now using that full-time instead of
+sup-notmuch; see the `csup` project.
 
 ## Sup User's Guide
 
