@@ -17,7 +17,7 @@ ruby version 2.5.1p57, and notmuch version 0.26.
 * Linux Mint 21 and Ubuntu 22.04, with ruby version 3.0.2p107 and notmuch version 0.35.
 
 I have ported Sup-notmuch to Crystal, and am now using that full-time instead of
-sup-notmuch; see the `csup` project.
+sup-notmuch; see the `csup` project ([source](https://www.bloovis.com/cgit/csup/), [github mirror](https://github.com/bloovis/csup)).
 
 ## Sup User's Guide
 
@@ -29,11 +29,6 @@ ignore anything related to Xapian or installation of the old sup.
 
 To use sup-notmuch (Sup with notmuch support), you must checkout and use the `notmuch` branch
 of the [sup-notmuch git repository](https://www.bloovis.com/cgit/sup-notmuch/).
-
-I have tested sup-notmuch on:
-
-* Linux Mint 19 (based on Ubuntu 18.04), which uses ruby version 2.5.1p57, and notmuch version 0.26.
-* Linux Mint 21 (based on Ubuntu 22.04), which uses ruby version 3.0.2p107, and notmuch version 0.35.
 
 To clone the repository and switch to the `notmuch` branch:
 
